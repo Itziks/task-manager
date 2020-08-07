@@ -2,7 +2,7 @@ const express = require('express')
 const router = new express.Router()
 module.exports = router
 const User = require('../models/user')
-const { urlencoded } = require('express')
+const auth = require('../middleware/auth')
 
 router.post('/users', async (req, res) => {
     try {
@@ -26,13 +26,32 @@ router.post('/users/login', async (req, res) => {
     }
 })
 
-router.get('/users', async (req, res) => {
+router.post('/users/logout', auth, async (req, res) => {
     try {
-        const users = await User.find({})
-        res.send(users);
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token.token !== req.token
+        })
+        await req.user.save()
+        res.send()
     } catch (e) {
-        res.status(500).send();
+        console.log(e)
+        res.status(500).send()
     }
+})
+
+router.post('/users/logoutAll', auth, async (req, res) => {
+    try {
+        req.user.tokens = [];
+        await req.user.save()
+        res.send()
+    } catch (e) {
+        console.log(e)
+        res.status(500).send()
+    }
+})
+
+router.get('/users/me', auth, async (req, res) => {
+    res.send(req.user)
 })
 
 router.get('/users/:id', async (req, res) => {
