@@ -54,7 +54,6 @@ router.get('/users/me', auth, async (req, res) => {
     res.send(req.user)
 })
 
-
 router.patch('/users/me', auth, async (req, res) => {
     const updates = Object.keys(req.body)
     const allowedUpdates = ['name', 'email', 'password', 'age']
@@ -83,7 +82,3 @@ router.delete('/users/me', auth, async (req, res) => {
         res.status(500).send()
     }
 })
-
-const isValidObjectId = (_id) => {
-    return _id.match(/^[0-9a-fA-F]{24}$/)
-}
